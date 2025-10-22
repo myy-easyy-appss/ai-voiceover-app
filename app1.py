@@ -12,15 +12,16 @@ st.write("Type your text and instantly generate a realistic AI voice!")
 text = st.text_area("Enter your text below:", height=150)
 
 # Select voice
-voices =voices = [
-    "en-US-GuyNeural", "en-US-JennyNeural", "en-US-AriaNeural", "en-US-DavisNeural",
-    "en-GB-RyanNeural", "en-GB-SoniaNeural",
-    "en-IN-NeerjaNeural", "en-IN-PrabhatNeural",
-    "en-AU-NatashaNeural", "en-AU-WilliamNeural",
-    "en-CA-ClaraNeural", "en-CA-LiamNeural"
-]
+accent = st.selectbox("Select accent:", ["US", "UK", "India", "Australia", "Canada"])
+voice_dict = {
+    "US": ["en-US-GuyNeural", "en-US-JennyNeural", "en-US-AriaNeural", "en-US-DavisNeural"],
+    "UK": ["en-GB-RyanNeural", "en-GB-SoniaNeural"],
+    "India": ["en-IN-NeerjaNeural", "en-IN-PrabhatNeural"],
+    "Australia": ["en-AU-NatashaNeural", "en-AU-WilliamNeural"],
+    "Canada": ["en-CA-ClaraNeural", "en-CA-LiamNeural"]
+}
+voice = st.selectbox("Choose a voice:", voice_dict[accent])
 
-voice = st.selectbox("Choose a voice:", voices)
 
 # File name
 file_name = "output.mp3"
@@ -38,3 +39,4 @@ async def tts(text, voice):
 # Button to trigger
 if st.button("Generate Voice 🎧"):
     asyncio.run(tts(text, voice))
+
