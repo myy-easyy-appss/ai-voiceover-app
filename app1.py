@@ -3,40 +3,38 @@ import edge_tts
 import asyncio
 import os
 
-st.title("🎙️ Voiceover Generator")
+st.set_page_config(page_title="AI Voiceover Generator", page_icon="🎙️")
 
-# Initialize
-if "text_blocks" not in st.session_state:
-    st.session_state.text_blocks = ["Welcome to my app!", "This is a demo.", "Enjoy your day!"]
+st.title("🎙️ AI Voiceover Generator")
+st.write("Type your text and instantly generate a realistic AI voice!")
 
-# Add new text input
-new_text = st.text_input("Add a new line:")
-if st.button("Add"):
-    if new_text:
-        st.session_state.text_blocks.append(new_text)
-        st.success("Added successfully!")
+# Input text
+text = st.text_area("Enter your text below:", height=150)
 
-# Reorder section
-st.subheader("Reorder lines 🧩")
-positions = []
-for i, text in enumerate(st.session_state.text_blocks):
-    pos = st.number_input(f"Position for line {i+1}: {text}", min_value=1, max_value=len(st.session_state.text_blocks), value=i+1)
-    positions.append((text, pos))
+# Select voice
+voices =voices = [
+    "en-US-GuyNeural", "en-US-JennyNeural", "en-US-AriaNeural", "en-US-DavisNeural",
+    "en-GB-RyanNeural", "en-GB-SoniaNeural",
+    "en-IN-NeerjaNeural", "en-IN-PrabhatNeural",
+    "en-AU-NatashaNeural", "en-AU-WilliamNeural",
+    "en-CA-ClaraNeural", "en-CA-LiamNeural"
+]
 
-if st.button("Apply Order"):
-    st.session_state.text_blocks = [t for t, _ in sorted(positions, key=lambda x: x[1])]
-    st.success("Reordered successfully!")
+voice = st.selectbox("Choose a voice:", voices)
 
-st.write("### Final Order:")
-for line in st.session_state.text_blocks:
-    st.write(f"- {line}")
+# File name
+file_name = "output.mp3"
 
-# Generate audio
-voice = st.selectbox("Choose Voice:", ["en-US-AriaNeural", "en-GB-RyanNeural"])
-if st.button("Generate Voice"):
-    async def generate_audio():
-        communicate = edge_tts.Communicate(" ".join(st.session_state.text_blocks), voice)
-        await communicate.save("output.mp3")
-        st.audio("output.mp3")
+async def tts(text, voice):
+    if text.strip() == "":
+        st.warning("Please enter some text!")
+        return
+    communicate = edge_tts.Communicate(text, voice)
+    await communicate.save(file_name)
+    st.success("✅ Voice generated successfully!")
+    audio_file = open(file_name, "rb")
+    st.audio(audio_file.read(), format="audio/mp3")
 
-    asyncio.run(generate_audio())
+# Button to trigger
+if st.button("Generate Voice 🎧"):
+    asyncio.run(tts(text, voice))
